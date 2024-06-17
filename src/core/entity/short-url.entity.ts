@@ -4,7 +4,6 @@ import { ShortUrlError } from "@/shared/error/short-url.error";
 
 export class ShortUrlEntity {
   private WORDS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-
   constructor(readonly url: string, readonly id = '', private count = 1) { }
   execute(): Either<ShortUrlError, string> {
     try {
