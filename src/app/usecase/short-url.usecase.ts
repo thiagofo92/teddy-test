@@ -1,30 +1,35 @@
 import { ResponseFormated, responseData, responseError } from "@/util/response.util";
 import { ShortUrlDtoInput, ShortUrlUpdateDtoInput } from "../dto";
-import { ShortUrlUseCasePor } from "./port";
+import { ShortUrlUseCasePort } from "./port";
 import { HTTP_CODE_UTIL } from "@/util/http-code.util";
 import { LoginRepositoryPort, ShortUrlRepositoryPort } from "@/infra/repository/port";
 import { ShortUrlEntity } from "@/core/entity";
 
-export class ShortUrlUseCase implements ShortUrlUseCasePor {
+export class ShortUrlUseCase implements ShortUrlUseCasePort {
   constructor(private readonly rp: ShortUrlRepositoryPort, private readonly loginRp: LoginRepositoryPort) { }
   async create<T = any>(input: ShortUrlDtoInput): Promise<ResponseFormated<T>> {
 
-    const entity = new ShortUrlEntity(input.url)
+    if (input.userUUID) {
+      const result = await this.loginRp.findByUUID(input.userUUID)
+      if (result.isRight()) input.userId = result.value.id
+    }
+
+    const entity = new ShortUrlEntity(input.url, 1, input.userId)
     entity.execute()
 
     const result = await this.rp.create(entity)
 
     if (result.isLeft()) {
+
       return responseError(result.value)
     }
 
-    return responseData({}, HTTP_CODE_UTIL.CREATED)
+    return responseData({ url: entity.getDomainShorted() }, HTTP_CODE_UTIL.CREATED)
   }
 
-  async update<T = any>(id: number, input: ShortUrlUpdateDtoInput): Promise<ResponseFormated<T>> {
+  async update<T = any>(input: ShortUrlUpdateDtoInput): Promise<ResponseFormated<T>> {
     const entity = new ShortUrlEntity(input.url)
-
-    const result = await this.rp.update(id, entity)
+    const result = await this.rp.update(input.id, entity)
     if (result.isLeft()) {
       return responseError(result.value)
     }
@@ -43,7 +48,7 @@ export class ShortUrlUseCase implements ShortUrlUseCasePor {
     if (result.isLeft()) {
       return responseError(result.value)
     }
-    return responseData({}, HTTP_CODE_UTIL.OK)
+    return responseData(result.value, HTTP_CODE_UTIL.OK)
   }
 
   async findByUrlShorted<T = any>(url: string): Promise<ResponseFormated<T>> {
@@ -52,8 +57,14 @@ export class ShortUrlUseCase implements ShortUrlUseCasePor {
       return responseError(result.value)
     }
 
-    const up = await this.rp.updateCount(result.value.id, result.value.count++)
-    return responseData(up, HTTP_CODE_UTIL.OK)
+    const count = result.value.count + 1
+    const up = await this.rp.updateCount(result.value.id, count)
+
+    if (up.isLeft()) {
+      return responseError(up.value)
+    }
+
+    return responseData(result.value.urlOriginal, HTTP_CODE_UTIL.OK)
   }
 
   async delete<T = any>(id: number): Promise<ResponseFormated<T>> {
