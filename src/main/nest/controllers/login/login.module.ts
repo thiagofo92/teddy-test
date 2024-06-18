@@ -24,7 +24,6 @@ import { JwtService } from '@nestjs/jwt';
     },
     PrismaConnect,
     JwtService
-
   ]
 })
 export class LoginModule { }
