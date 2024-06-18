@@ -6,20 +6,26 @@ import { LoginEntity } from '@/core/entity'
 import { Right } from '@/shared/error'
 import { LoginMock } from './mock'
 import { LoginAlreadyExistError, LoginAuthorizedError } from '@/shared/error/login.error'
-
+import { LoginRepositoryPort } from '../port'
 
 describe('# Login - Unit', () => {
   let conn: PrismaConnect
-  let rp: LoginRepository
+  let rp: LoginRepositoryPort
 
   beforeEach(async () => {
     conn = new PrismaConnect()
     rp = new LoginRepository(conn)
     const moduleRef = await Test.createTestingModule({
-      providers: [LoginRepository, PrismaConnect],
+      providers: [
+        {
+          provide: LoginRepositoryPort,
+          useFactory: (conn) => new LoginRepository(conn),
+          inject: [PrismaConnect]
+        }, PrismaConnect
+      ],
     }).compile();
 
-    rp = moduleRef.get<LoginRepository>(LoginRepository);
+    rp = moduleRef.get<LoginRepositoryPort>(LoginRepositoryPort);
   })
 
   test('Create - [SUCESS] - "Create a new login"', async () => {
@@ -39,9 +45,9 @@ describe('# Login - Unit', () => {
 
   test('Auth - [SUCESS] - "Login authorized"', async () => {
     const input: LoginEntity = LoginMock.main.entity
-    await rp.create(input)
-    const result = await rp.auth(input.email, input.pass) as Right<Error, boolean>
-    expect(result.value).toStrictEqual(true)
+    const result = await rp.auth(input.email, input.pass) as Right<Error, { id: string }>
+    expect(result.value.id).toBeTypeOf('string')
+    expect(result.value.id).not.toStrictEqual('')
   })
 
   test('Auth - [ERROR] - "Invalid login"', async () => {

@@ -17,10 +17,14 @@ describe('# Short Url - Unit', () => {
     conn = new PrismaConnect()
     rp = new ShortUrlRepository(conn)
     const moduleRef = await Test.createTestingModule({
-      providers: [ShortUrlRepository, PrismaConnect],
+      providers: [{
+        provide: ShortUrlRepositoryPort,
+        useFactory: (conn) => new ShortUrlRepository(conn),
+        inject: [PrismaConnect]
+      }, PrismaConnect],
     }).compile();
 
-    rp = moduleRef.get<ShortUrlRepository>(ShortUrlRepository);
+    rp = moduleRef.get<ShortUrlRepositoryPort>(ShortUrlRepositoryPort);
   })
 
   test('Create - [SUCCES] - "Create a short url"', async () => {
