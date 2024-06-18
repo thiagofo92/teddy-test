@@ -1,4 +1,4 @@
-import Winston, { format, transports } from 'winston'
+import Winston, { format, transports, createLogger } from 'winston'
 
 // disable logs from winston in test env
 const transportsOptions: Winston.transport[] = [
@@ -14,4 +14,4 @@ const options: Winston.LoggerOptions = {
   rejectionHandlers: [new transports.Console({ level: 'alert' })]
 }
 
-export const Logger = Winston.createLogger(options)
+export const Logger = createLogger(options)

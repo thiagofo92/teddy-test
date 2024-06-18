@@ -1,1 +1,1 @@
-export * form './logger.ts'
+export * from './logger'
