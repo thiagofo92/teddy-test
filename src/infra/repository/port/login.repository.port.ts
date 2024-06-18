@@ -8,6 +8,6 @@ type LoginCreated = { id: string }
 
 export abstract class LoginRepositoryPort {
   create: (input: LoginEntity) => Promise<Either<LoginAlreadyExistError | InternalServerError, LoginCreated>>
-  auth: (emai: string, pass: string) => Promise<Either<LoginAuthorizedError | InternalServerError, boolean>>
+  auth: (emai: string, pass: string) => Promise<Either<LoginAuthorizedError | InternalServerError, LoginCreated>>
   findByUUID: (id: string) => Promise<Either<LoginAuthorizedError | InternalServerError, LoginDtoOutPut>>
 }

@@ -3,11 +3,9 @@ import { ShortUrlReponseCreate, ShortUrlRepositoryPort } from "./port";
 import { PrismaConnect } from "./prisma.repository";
 import { InternalServerError, NotContent, NotFoundError } from "@/shared/error/general.error";
 import { ShortUrlEntity } from "@/core/entity";
-import { Injectable } from "@nestjs/common";
 import { Logger } from "@/shared/logger";
 import { ShortUrlFindUrl, ShortUrlOutPut } from "@/app/dto/output/short-url.dto.output";
 
-@Injectable()
 export class ShortUrlRepository implements ShortUrlRepositoryPort {
   constructor(private readonly conn: PrismaConnect) { }
 

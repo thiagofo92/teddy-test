@@ -3,19 +3,18 @@ import { Either, left, right } from "@/shared/error";
 import { LoginRepositoryPort } from "./port";
 import { PrismaConnect } from "./prisma.repository";
 import { randomUUID } from "crypto";
-import bcrypt from 'bcrypt'
-import { Injectable } from "@nestjs/common";
+import { genSalt, hash, compare } from 'bcrypt'
 import { LoginAlreadyExistError, LoginAuthorizedError } from "@/shared/error/login.error";
 import { InternalServerError, NotFoundError } from "@/shared/error/general.error";
 import { LoginDtoOutPut } from "@/app/dto";
+import { Logger } from "@/shared";
 
-@Injectable()
 export class LoginRepository implements LoginRepositoryPort {
   constructor(private readonly conn: PrismaConnect) { }
   async create(input: LoginEntity): Promise<Either<Error, { id: string; }>> {
     try {
-      const salt = await bcrypt.genSalt()
-      const pass = await bcrypt.hash(input.pass, salt)
+      const salt = await genSalt(10)
+      const pass = await hash(input.pass, salt)
 
       const result = await this.conn.login.create({
         data: {
@@ -30,23 +29,23 @@ export class LoginRepository implements LoginRepositoryPort {
     } catch (error) {
       if (error.code == 'P2002') return left(new LoginAlreadyExistError())
 
-      console.log(error)
+      Logger.error(error.message || error.name)
       return left(new InternalServerError())
     }
   }
 
-  async auth(email: string, pass: string): Promise<Either<LoginAuthorizedError | InternalServerError, boolean>> {
+  async auth(email: string, pass: string): Promise<Either<LoginAuthorizedError | InternalServerError, { id: string }>> {
     try {
       const result = await this.conn.login.findUnique({ where: { email } })
 
       if (!result) return left(new LoginAuthorizedError())
 
-      const auth = await bcrypt.compare(pass, result.pass)
+      const auth = await compare(pass, result.pass)
 
       if (!auth) return left(new LoginAuthorizedError())
-      return right(true)
+      return right({ id: result.uuid })
     } catch (error) {
-      console.log(error)
+      Logger.error(error.message || error.name)
       return left(new InternalServerError())
     }
   }
@@ -63,7 +62,7 @@ export class LoginRepository implements LoginRepositoryPort {
         email: result.email
       })
     } catch (error) {
-      console.log(error)
+      Logger.error(error.message || error.name)
       return left(new InternalServerError())
     }
   }
