@@ -6,7 +6,8 @@ import { randomUUID } from "crypto";
 import bcrypt from 'bcrypt'
 import { Injectable } from "@nestjs/common";
 import { LoginAlreadyExistError, LoginAuthorizedError } from "@/shared/error/login.error";
-import { InternalServerError } from "@/shared/error/general.error";
+import { InternalServerError, NotFoundError } from "@/shared/error/general.error";
+import { LoginDtoOutPut } from "@/app/dto";
 
 @Injectable()
 export class LoginRepository implements LoginRepositoryPort {
@@ -44,6 +45,23 @@ export class LoginRepository implements LoginRepositoryPort {
 
       if (!auth) return left(new LoginAuthorizedError())
       return right(true)
+    } catch (error) {
+      console.log(error)
+      return left(new InternalServerError())
+    }
+  }
+
+  async findByUUID(uuid: string): Promise<Either<LoginAuthorizedError | InternalServerError, LoginDtoOutPut>> {
+    try {
+      const result = await this.conn.login.findFirst({ where: { uuid } })
+
+
+      if (!result) return left(new NotFoundError())
+
+      return right({
+        id: result.id,
+        email: result.email
+      })
     } catch (error) {
       console.log(error)
       return left(new InternalServerError())

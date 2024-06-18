@@ -3,12 +3,10 @@ import { PrismaConnect } from '../prisma.repository'
 import { ShortUrlRepositoryPort } from '../port'
 import { ShortUrlRepository } from '../short-url.repository'
 import { Test } from '@nestjs/testing'
-import { ShortUrlEntity } from '@/core/entity'
 import { Right } from '@/shared/error'
 import { LoginMock, ShortUrlMock } from './mock'
-import { InternalServerError, NotContent, NotFoundError } from '@/shared/error/general.error'
-import { ShortUrlOutPut } from '@/dto/output/short-url.dto.output'
-import { InternetModule } from '@faker-js/faker'
+import { NotContent, NotFoundError } from '@/shared/error/general.error'
+import { ShortUrlFindUrl, ShortUrlOutPut } from '@/app/dto/output/short-url.dto.output'
 
 
 describe('# Short Url - Unit', () => {
@@ -125,20 +123,20 @@ describe('# Short Url - Unit', () => {
   test('FindByShortedUrl - [SUCCESS] - "Find using shorted url"', async () => {
     const url = ShortUrlMock.tofindurl.entity.getShortedUrl()
 
-    const result = await rp.findByShortedUrl(url) as Right<Error, string>
-    expect(result.value).toStrictEqual(ShortUrlMock.tofindurl.entity.url)
+    const result = await rp.findByShortedUrl(url) as Right<Error, ShortUrlFindUrl>
+    expect(result.value.urlOriginal).toStrictEqual(ShortUrlMock.tofindurl.entity.url)
   })
 
-  test('FindById - [ERROR] - "ID not found"', async () => {
+  test('FindByShortedUrl - [ERROR] - "Url not found"', async () => {
     const url = 'http://localhost:4000/notfound'
 
-    const result = await rp.findByShortedUrl(url) as Right<Error, string>
+    const result = await rp.findByShortedUrl(url) as Right<Error, ShortUrlFindUrl>
 
     expect(result.value).toBeInstanceOf(NotFoundError)
   })
 
-  test('FindById - [ERROR] - "Internal server error"', async () => {
-    const result = await rp.findByShortedUrl('') as Right<Error, string>
+  test('FindByShortedUrl - [ERROR] - "Internal server error"', async () => {
+    const result = await rp.findByShortedUrl('') as Right<Error, ShortUrlFindUrl>
 
     expect(result.value).toBeInstanceOf(Error)
   })

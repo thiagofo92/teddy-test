@@ -1,3 +1,4 @@
+import { LoginDtoOutPut } from "@/app/dto"
 import { LoginEntity } from "@/core/entity"
 import { Either } from "@/shared/error"
 import { InternalServerError } from "@/shared/error/general.error"
@@ -8,4 +9,5 @@ type LoginCreated = { id: string }
 export abstract class LoginRepositoryPort {
   create: (input: LoginEntity) => Promise<Either<LoginAlreadyExistError | InternalServerError, LoginCreated>>
   auth: (emai: string, pass: string) => Promise<Either<LoginAuthorizedError | InternalServerError, boolean>>
+  findByUUID: (id: string) => Promise<Either<LoginAuthorizedError | InternalServerError, LoginDtoOutPut>>
 }

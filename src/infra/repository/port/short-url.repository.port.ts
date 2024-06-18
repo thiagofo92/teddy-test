@@ -1,5 +1,5 @@
 import { ShortUrlEntity } from "@/core/entity"
-import { ShortUrlOutPut } from "@/dto/output/short-url.dto.output"
+import { ShortUrlFindUrl, ShortUrlOutPut } from "@/app/dto/output/short-url.dto.output"
 import { Either } from "@/shared/error"
 import { InternalServerError, NotContent, NotFoundError } from "@/shared/error/general.error"
 
@@ -14,6 +14,6 @@ export abstract class ShortUrlRepositoryPort {
   // TODO Add type to be returned
   findAll: (userId: number) => Promise<Either<InternalServerError | NotContent, ShortUrlOutPut[]>>
   findById: (id: number) => Promise<Either<InternalServerError | NotContent, ShortUrlOutPut>>
-  findByShortedUrl: (url: string) => Promise<Either<InternalServerError | NotContent, string >>
+  findByShortedUrl: (url: string) => Promise<Either<InternalServerError | NotContent, ShortUrlFindUrl>>
   delete: (id: number) => Promise<Either<InternalServerError | NotFoundError, boolean>>
 }

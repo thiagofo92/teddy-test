@@ -5,7 +5,7 @@ import { InternalServerError, NotContent, NotFoundError } from "@/shared/error/g
 import { ShortUrlEntity } from "@/core/entity";
 import { Injectable } from "@nestjs/common";
 import { Logger } from "@/shared/logger";
-import { ShortUrlOutPut } from "@/dto/output/short-url.dto.output";
+import { ShortUrlFindUrl, ShortUrlOutPut } from "@/app/dto/output/short-url.dto.output";
 
 @Injectable()
 export class ShortUrlRepository implements ShortUrlRepositoryPort {
@@ -75,6 +75,7 @@ export class ShortUrlRepository implements ShortUrlRepositoryPort {
       })
 
       if (!result) return left(new NotFoundError())
+
       const entity = {
         userId: result.userId,
         id: result.id,
@@ -122,7 +123,7 @@ export class ShortUrlRepository implements ShortUrlRepositoryPort {
     }
   }
 
-  async findByShortedUrl(url: string): Promise<Either<InternalServerError | NotContent, string>> {
+  async findByShortedUrl(url: string): Promise<Either<InternalServerError | NotContent, ShortUrlFindUrl>> {
     try {
       const result = await this.conn.url.findFirst({
         where: {
@@ -133,7 +134,12 @@ export class ShortUrlRepository implements ShortUrlRepositoryPort {
 
       if (!result) return left(new NotFoundError())
 
-      return right(result.urlOriginal)
+      return right({
+        id: result.id,
+        urlOriginal: result.urlOriginal,
+        count: result.count
+      })
+
     } catch (error) {
       Logger.error(error.message || error.message)
       if (error.code == 'P2025') return left(new NotFoundError())
