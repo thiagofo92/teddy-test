@@ -7,7 +7,6 @@ import { AuthGuard } from '../../guard/auth.guard.jwt';
 import { Request, Response } from 'express';
 import { SkipAuth } from '../../guard/decorator/skip-auth.decorator';
 import { UserContext } from '../@types/user.type.context';
-import { NotContent } from '@/shared/error/general.error';
 
 @Controller('/v1/short-url')
 @ApiTags('Short Url')
@@ -17,7 +16,10 @@ export class ShortUrlController {
   constructor(private readonly usecase: ShortUrlUseCasePort) { }
 
   @Post()
-  @ApiCreatedResponse({ type: ShortUrlValidationOutput })
+  @ApiCreatedResponse({ type: ShortUrlValidationOutput, description: `Essa rota permite criar URLs encurtadas, o processo pode ser feito com login ou sem.
+    Caso crio uma nova URL logado, a mesma será atrelada ao seu login,
+    Caso crie sem estar logado, a nova url será salva no banco sem usuário 
+    ` })
   @ApiBadRequestResponse()
   @ApiInternalServerErrorResponse()
   @SkipAuth()
