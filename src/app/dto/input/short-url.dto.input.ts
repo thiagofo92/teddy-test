@@ -1,6 +1,7 @@
 export interface ShortUrlDtoInput {
   url: string,
-  userId?: string
+  userUUID?: string
+  userId?: number
 }
 
 export interface ShortUrlUpdateDtoInput {
