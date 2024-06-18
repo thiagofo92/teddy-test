@@ -29,9 +29,9 @@ export class LoginUseCase implements LoginUseCasePort {
       return responseError(result.value)
     }
 
-    const payload = { sub: result.value.id }
+    const payload = { sub: { userId: result.value.id } }
 
-    const token = await this.jwt.signAsync(payload, { secret: this.secretJwt })
+    const token = await this.jwt.signAsync(payload, { secret: this.secretJwt, expiresIn: '1min' })
 
     return responseData({ token }, HTTP_CODE_UTIL.OK)
   }
