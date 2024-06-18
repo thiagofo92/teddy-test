@@ -17,7 +17,7 @@ describe('# Short ULR Entity - Unit', () => {
     expect(output.value).toBeInstanceOf(ShortUrlError)
   })
   test('Execute - [SUCCESS] - "Update the count of access"', () => {
-    const short = new ShortUrlEntity('http://localhost/test/unit', '')
+    const short = new ShortUrlEntity('http://localhost/test/unit')
     short.updateCount()
     expect(short.getCount()).toStrictEqual(2)
   })
