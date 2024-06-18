@@ -1,0 +1,11 @@
+{
+  "apps": [
+    {
+      "name": "api",
+      "cwd": "/api/src",
+      "script": "./main.js",
+      "watch": true,
+      "log_date_format": "MM/DD/YYYY HH:mm:ss"
+    }
+  ]
+}
