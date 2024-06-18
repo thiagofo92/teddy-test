@@ -6,7 +6,7 @@ export class ShortUrlEntity {
   private WORDS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   private shortedUrl: string
 
-  constructor(readonly url: string, private count = 1) { }
+  constructor(readonly url: string, private count = 1, readonly userId: number = null) { }
   execute(): Either<ShortUrlError, string> {
     try {
       new URL(this.url)
@@ -19,11 +19,10 @@ export class ShortUrlEntity {
 
   private generateUrl(): string {
     let result = "";
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       result += this.WORDS.charAt(Math.floor(Math.random() * this.WORDS.length));
     }
-    const domain = process.env.SERVER_DOMAIN || 'http://localhost:3500'
-    return `${domain}/${result}`
+    return result
   }
 
   updateCount() {
@@ -32,6 +31,11 @@ export class ShortUrlEntity {
 
   getCount() {
     return this.count
+  }
+
+  getDomainShorted() {
+    const domain = process.env.SERVER_DOMAIN || 'http://localhost:3500'
+    return `${domain}/${this.shortedUrl}`
   }
 
   getShortedUrl() {

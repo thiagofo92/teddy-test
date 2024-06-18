@@ -7,9 +7,8 @@ describe('# Short ULR Entity - Unit', () => {
   test('Execute - [SUCCESS] - "Create a shorted url"', () => {
     const short = new ShortUrlEntity('http://localhost/test/unit')
     const output = short.execute() as Right<Error, string>
-    const u = new URL(output.value)
     expect(output.value).toBeTypeOf('string')
-    expect(u.pathname).toHaveLength(6)
+    expect(output.value).toHaveLength(6)
   })
   test('Execute - [ERROR] - "Invalid URL"', () => {
     const short = new ShortUrlEntity('localhost/test/unit')
