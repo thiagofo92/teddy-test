@@ -23,7 +23,7 @@ describe('# Login - Unit', () => {
   })
 
   test('Create - [SUCESS] - "Create a new login"', async () => {
-    const input: LoginEntity = LoginMock.main
+    const input: LoginEntity = LoginMock.main.entity
 
     const result = await rp.create(input) as Right<Error, { id: string }>
     expect(result.value.id).toBeTypeOf('string')
@@ -31,21 +31,21 @@ describe('# Login - Unit', () => {
   })
 
   test('Create - [ERROR] - "Email already registered"', async () => {
-    const input: LoginEntity = LoginMock.exist
+    const input: LoginEntity = LoginMock.exist.entity
 
     const result = await rp.create(input)
     expect(result.value).toBeInstanceOf(LoginAlreadyExistError)
   })
 
   test('Auth - [SUCESS] - "Login authorized"', async () => {
-    const input: LoginEntity = LoginMock.main
+    const input: LoginEntity = LoginMock.main.entity
     await rp.create(input)
     const result = await rp.auth(input.email, input.pass) as Right<Error, boolean>
     expect(result.value).toStrictEqual(true)
   })
 
   test('Auth - [ERROR] - "Invalid login"', async () => {
-    const input: LoginEntity = LoginMock.main
+    const input: LoginEntity = LoginMock.main.entity
 
     const result = await rp.auth(input.email, input.pass + 'invalid')
     expect(result.value).toBeInstanceOf(LoginAuthorizedError)

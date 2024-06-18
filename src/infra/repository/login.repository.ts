@@ -6,6 +6,7 @@ import { randomUUID } from "crypto";
 import bcrypt from 'bcrypt'
 import { Injectable } from "@nestjs/common";
 import { LoginAlreadyExistError, LoginAuthorizedError } from "@/shared/error/login.error";
+import { InternalServerError } from "@/shared/error/general.error";
 
 @Injectable()
 export class LoginRepository implements LoginRepositoryPort {
@@ -28,11 +29,12 @@ export class LoginRepository implements LoginRepositoryPort {
     } catch (error) {
       if (error.code == 'P2002') return left(new LoginAlreadyExistError())
 
-      return left(error)
+      console.log(error)
+      return left(new InternalServerError())
     }
   }
 
-  async auth(email: string, pass: string): Promise<Either<Error, boolean>> {
+  async auth(email: string, pass: string): Promise<Either<LoginAuthorizedError | InternalServerError, boolean>> {
     try {
       const result = await this.conn.login.findUnique({ where: { email } })
 
@@ -43,7 +45,8 @@ export class LoginRepository implements LoginRepositoryPort {
       if (!auth) return left(new LoginAuthorizedError())
       return right(true)
     } catch (error) {
-      return left(error)
+      console.log(error)
+      return left(new InternalServerError())
     }
   }
 }
