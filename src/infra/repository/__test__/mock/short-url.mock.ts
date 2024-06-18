@@ -16,7 +16,7 @@ type ShortUrlType = {
 
 const main = new ShortUrlEntity('http://locahost:3000/test')
 //@ts-ignore
-main.shortedUrl = 'http://localhost:3000/000000'
+main.shortedUrl = '000000'
 const ShortUrlMock: ShortUrlType = {
   main: {
     id: 1,
@@ -39,10 +39,10 @@ const ShortUrlMock: ShortUrlType = {
   }
 }
 //@ts-ignore
-ShortUrlMock.tofindurl.entity.shortedUrl = 'http://localhost:5000/11111'
+ShortUrlMock.tofindurl.entity.shortedUrl = '111111'
 //@ts-ignore
-ShortUrlMock.toupdate.entity.shortedUrl = 'http://localhost:5000/222222'
+ShortUrlMock.toupdate.entity.shortedUrl = '222222'
 //@ts-ignore
-ShortUrlMock.todelete.entity.shortedUrl = 'http://localhost:5000/333333'
+ShortUrlMock.todelete.entity.shortedUrl = '333333'
 
 export { ShortUrlMock }

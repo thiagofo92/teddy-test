@@ -13,6 +13,7 @@ export class ShortUrlRepository implements ShortUrlRepositoryPort {
     try {
       const result = await this.conn.url.create({
         data: {
+          userId: input.userId,
           urlOriginal: input.url,
           urlShorted: input.getShortedUrl(),
           count: input.getCount(),
@@ -47,6 +48,7 @@ export class ShortUrlRepository implements ShortUrlRepositoryPort {
 
   async updateCount(id: number, count: number): Promise<Either<InternalServerError | NotFoundError, boolean>> {
     try {
+      console.log(count)
       await this.conn.url.update({
         where: {
           id
@@ -115,7 +117,6 @@ export class ShortUrlRepository implements ShortUrlRepositoryPort {
       return right(entities)
     } catch (error) {
       Logger.error(error.message || error.message)
-      console.log(error)
       if (error.code == 'P2025') return left(new NotFoundError())
       return left(new InternalServerError())
     }
