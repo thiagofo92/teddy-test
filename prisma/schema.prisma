@@ -25,14 +25,16 @@ model Login {
 }
 
 model Url {
-  id              Int      @id @unique @default(autoincrement())
-  login           Login    @relation(fields: [userId], references: [id])
-  url             String
+  id              Int       @id @unique @default(autoincrement())
+  login           Login?    @relation(fields: [userId], references: [id])
+  urlOriginal     String    @map("url_original")
+  urlShorted      String    @map("url_shorted")
   count           Int
-  lastUpdateCount DateTime @map("last_update_count")
-  lastUpdateUrl   DateTime @map("last_update_url")
+  lastUpdateCount DateTime? @map("last_update_count")
+  lastUpdateUrl   DateTime? @map("last_update_url")
+  deleted         Boolean   @default(false)
+  userId          Int?
 
-  userId Int
-
+  @@index([urlShorted])
   @@map("url")
 }
