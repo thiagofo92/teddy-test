@@ -1,21 +1,26 @@
-version: "3.9"
-
 services:
-  api:
-    build: .
-    container_name: "api-teddy"
-    ports:
-      - 3500:3500
-    env_file: ".env.docker"
-    depends_on:
-      - db
   db:
     container_name: "db-teddy"
     image: mysql:8.4
     ports:
       - 5006:3306
     environment:
-      MYSQL_ROOT_PASSWORD: "12344321"
-      MYSQL_USER: "admin"
-      MYSQL_PASSWORD: "12344321"
-      MYSQL_DATABASE: "teddy"
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+    volumes:
+      - ./database:/var/lib/mysql
+  api:
+    build: .
+    container_name: "api-teddy"
+    ports:
+      - 3500:3500
+    environment:
+      SERVER_HOST: ${HOST}
+      SERVER_PORT: ${PORT}
+      SERVER_DOMAIN: ${DOMAIN}
+    depends_on:
+      - db
+    links:
+      - "db:db"
