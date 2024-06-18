@@ -20,6 +20,7 @@ services:
       SERVER_HOST: ${HOST}
       SERVER_PORT: ${PORT}
       SERVER_DOMAIN: ${DOMAIN}
+      JWT_SECRET: ${JWT_SECRET}
     depends_on:
       - db
     links:
